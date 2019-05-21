@@ -1,13 +1,12 @@
-package schema
+package repo
 
 import javax.inject.Inject
+import model.Models.User
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.lifted._
 
 import scala.concurrent.{ExecutionContext, Future}
-
-case class User(id : Long, name : String)
 
 class UserRepo @Inject()
   ()
@@ -30,4 +29,6 @@ class UserRepo @Inject()
   val setupFuture: Future[Unit] = db.run(setup)
 
   def getById(id : Long): Future[Option[User]] = db.run(users.filter(_.id === id).result).map(_.headOption)
+
+  def add(user : User): Future[Int] = db.run(users += user)
 }
