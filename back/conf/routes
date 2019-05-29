@@ -4,8 +4,11 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET     /                           controllers.HomeController.index
+
 GET     /user/id/:id                controllers.UserController.getById(id : Long)
+GET     /user/name/:name            controllers.UserController.getByName(name : String)
+GET     /user/all                   controllers.UserController.all
 POST    /user/add                   controllers.UserController.add
+POST    /user/update                controllers.UserController.update
 
       

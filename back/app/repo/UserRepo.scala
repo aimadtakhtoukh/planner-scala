@@ -13,22 +13,33 @@ class UserRepo @Inject()
   (implicit ec : ExecutionContext, protected val dbConfigProvider: DatabaseConfigProvider) extends HasDatabaseConfigProvider[JdbcProfile] {
   import profile.api._
 
-  case class LiftedUser(id : Rep[Long], name : Rep[String])
-  implicit object UserShape extends CaseClassShape(LiftedUser.tupled, User.tupled)
+  class Users(tag: Tag) extends Table[User](tag, "users") {
+    def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def name: Rep[String] = column[String]("name", O.Unique)
 
-  private class Users(tag: Tag) extends Table[User](tag, "users") {
-    def id: Rep[Long] = column[Long]("id", O.PrimaryKey)
-    def name: Rep[String] = column[String]("name")
-
-    override def * : ProvenShape[User] = LiftedUser(id, name)
+    override def * : ProvenShape[User] = (id.?, name) <> (User.tupled, User.unapply)
   }
 
-  private val users = TableQuery[Users]
+  val users = TableQuery[Users]
 
-  val setup = DBIO.seq(users.schema.create, users += User(1, "Aimad"))
+  val setup = DBIO.seq(users.schema.create, users += User(Some(1), "Aimad"))
   val setupFuture: Future[Unit] = db.run(setup)
 
-  def getById(id : Long): Future[Option[User]] = db.run(users.filter(_.id === id).result).map(_.headOption)
+  def all() : Future[List[User]] = db.run(users.result).map(_.toList)
 
-  def add(user : User): Future[Int] = db.run(users += user)
+  def byId(id : Long): Future[Option[User]] = db.run(users.filter(_.id === id).result).map(_.headOption)
+
+  def byName(name : String) : Future[Option[User]] =  db.run(users.filter(_.name === name).result).map(_.headOption)
+
+  def add(user : User): Future[Int] = {
+    if (user.name.isEmpty) {
+      return Future.failed(new IllegalArgumentException("Illegal name"))
+    }
+    db.run(users += user)
+  }
+
+  def update(id : Long, name : String): Future[Boolean] = {
+    val query = for (user <- users if user.id === id) yield user.name
+    db.run(query.update(name)) map (_ > 0)
+  }
 }
