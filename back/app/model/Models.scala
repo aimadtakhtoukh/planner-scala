@@ -13,5 +13,4 @@ object Availability extends Enumeration {
 }
 case class User(id : Option[Long], name : String)
 case class Entry(id : Option[Long], userId : Long, date : LocalDate, available:  Availability)
-
-
+case class UserWithEntries(user : User, entries : List[Entry])

@@ -14,3 +14,4 @@ POST    /user/update                controllers.UserController.update
 GET     /entry/id/:id               controllers.EntryController.getById(id : Long)
 GET     /entry/user/:id             controllers.EntryController.getByUser(id : Long)
 POST    /entry/add                  controllers.EntryController.add
+GET     /entry/withUser             controllers.EntryController.withUser

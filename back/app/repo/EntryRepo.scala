@@ -5,7 +5,7 @@ import java.time.LocalDate
 
 import javax.inject.Inject
 import model.Availability.Availability
-import model.{Availability, Entry}
+import model.{Availability, Entry, UserWithEntries}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.lifted._
@@ -53,5 +53,18 @@ class EntryRepo @Inject()
     db.run(entries.filter(_.userId === id).result).map(_.toList)
 
   def add(entry: Entry) : Future[Int] = db.run(entries += entry)
+
+  val joinedQuery =  userRepo.users joinLeft entries on (_.id === _.userId)
+
+  def usersWithEntries(): Future[List[UserWithEntries]] = {
+    db.run((userRepo.users joinLeft entries on (_.id === _.userId)).result)
+      .map(
+        _
+          .groupBy(_._1)
+          .mapValues{_.collect {case (_, Some(e)) => e}.toList}
+          .map(UserWithEntries.tupled)
+          .toList
+      )
+  }
 
 }

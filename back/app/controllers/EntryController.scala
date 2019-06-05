@@ -1,7 +1,7 @@
 package controllers
 
 import javax.inject.{Inject, Singleton}
-import model.{Availability, Entry}
+import model.Entry
 import play.api.Logging
 import play.api.libs.json._
 import play.api.mvc.{AbstractController, ControllerComponents}
@@ -12,28 +12,15 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class EntryController @Inject()
   (entryRepo : EntryRepo, cc: ControllerComponents)
-  (implicit ec : ExecutionContext) extends AbstractController(cc) with Logging {
-
-  implicit val disponibilityFormats: Format[Availability.Value] = Json.formatEnum(Availability)
-  implicit val entryFormats: OFormat[Entry] = Json.format[Entry]
-  implicit def optionFormat[T : Format] : Format[Option[T]] = new Format[Option[T]] {
-    override def reads(json: JsValue): JsResult[Option[T]] = json.validateOpt[T]
-
-    override def writes(o: Option[T]): JsValue = o match {
-      case Some(t) => implicitly[Writes[T]].writes(t)
-      case None => Json.obj()
-    }
-  }
+  (implicit ec : ExecutionContext) extends AbstractController(cc) with Logging with StandardFormats {
 
   def getById(id : Long) = Action.async {
-    implicit request =>
       entryRepo.byId(id)
         .map(Json.toJson(_))
         .map(Ok(_))
   }
 
   def getByUser(userId : Long) = Action.async {
-    implicit request =>
       entryRepo.byUser(userId)
         .map(Json.toJson(_))
         .map(Ok(_))
@@ -56,6 +43,12 @@ class EntryController @Inject()
             .map(_ => Ok(""))
             .recover {case ex => BadRequest(ex.getMessage)  }
       )
+  }
+
+  def withUser() = Action.async {
+      entryRepo.usersWithEntries()
+        .map(Json.toJson(_))
+        .map(Ok(_))
   }
 
 
