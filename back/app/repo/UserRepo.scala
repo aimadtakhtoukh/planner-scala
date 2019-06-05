@@ -1,7 +1,7 @@
 package repo
 
 import javax.inject.Inject
-import model.Models.User
+import model.User
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.lifted._
