@@ -2,6 +2,7 @@ package security
 
 import javax.inject.Inject
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
+import repo.UserRepo
 import slick.jdbc.JdbcProfile
 import slick.lifted.ProvenShape
 

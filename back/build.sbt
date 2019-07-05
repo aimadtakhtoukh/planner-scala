@@ -17,12 +17,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-json" % "2.6.0",
   "com.h2database" % "h2" % "1.4.199",
   guice,
-  /*
-  "com.mohiva" %% "play-silhouette" % "5.0.2",
-  "com.mohiva" %% "play-silhouette-persistence" % "5.0.2",
-  "com.mohiva" %% "play-silhouette-password-bcrypt" % "5.0.2",
-  "com.mohiva" %% "play-silhouette-crypto-jca" % "5.0.2",
-  */
+  ws,
+  ehcache,
 
   "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0" % "test",
   specs2 % Test
