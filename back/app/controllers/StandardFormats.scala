@@ -2,6 +2,7 @@ package controllers
 
 import model.{Availability, Entry, User, UserWithEntries}
 import play.api.libs.json._
+import security.DiscordUser
 
 trait StandardFormats {
 
@@ -9,6 +10,7 @@ trait StandardFormats {
   implicit val disponibilityFormats: Format[Availability.Value] = Json.formatEnum(Availability)
   implicit val entryFormats: OFormat[Entry] = Json.format[Entry]
   implicit val userWithEntriesFormats : OFormat[UserWithEntries] = Json.format[UserWithEntries]
+  implicit val discordUserFormats : OFormat[DiscordUser] = Json.format[DiscordUser]
 
   implicit def optionFormat[T : Format] : Format[Option[T]] = new Format[Option[T]] {
     override def reads(json: JsValue): JsResult[Option[T]] = json.validateOpt[T]
