@@ -17,3 +17,4 @@ POST    /entry/add                  controllers.EntryController.add
 GET     /entry/withUser             controllers.EntryController.withUser
 
 GET     /security/token             controllers.SecurityController.getToken()
+GET     /security/@me               controllers.SecurityController.getUser()

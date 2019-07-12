@@ -35,7 +35,8 @@ class UserRepo @Inject()
     if (user.name.isEmpty) {
       return Future.failed(new IllegalArgumentException("Illegal name"))
     }
-    db.run(users += user)
+    val insertQuery = users returning users.map(_.id) into ((user, id) => user.copy(id = Some(id)))
+    db.run(insertQuery += user).map(_.id.map(_.toInt).getOrElse(0))
   }
 
   def update(id : Long, name : String): Future[Boolean] = {

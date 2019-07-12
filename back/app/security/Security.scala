@@ -1,16 +1,18 @@
 package security
 
+import controllers.StandardFormats
 import javax.inject.Inject
 import play.api.Logging
+import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
 case class OAuthApp(id : String, clientId : String, clientSecret : String, authorizeUrl : String, tokenUrl : String, userInfoUrl : String, redirectUrl : Option[String])
 
-case class DiscordUser(id : String, username : String, discriminator : String, avatar: String, bot : Boolean, mfaEnabled : Boolean, locale : String, verified : String)
+case class DiscordUser(id : String, username : String, discriminator : String, avatar: String, bot : Option[Boolean], mfa_enabled : Boolean, locale : String, verified : Option[String])
 
-class Security @Inject()(wsClient: WSClient)(implicit ec : ExecutionContext) extends Logging {
+class Security @Inject()(wsClient: WSClient, securityUserRepo: SecurityUserRepo)(implicit ec : ExecutionContext) extends Logging with StandardFormats {
   val discordOAuth = OAuthApp(
     id = "DISCORD",
     clientId = "468461306031243264",
@@ -24,15 +26,12 @@ class Security @Inject()(wsClient: WSClient)(implicit ec : ExecutionContext) ext
   def getDiscordUserFromToken(token : String) : Future[Option[DiscordUser]] = {
     wsClient
       .url(discordOAuth.userInfoUrl)
-      .withHttpHeaders("Authorization" -> s"Bearer $token")
-      //.withAuth(discordOAuth.clientId, discordOAuth.clientSecret, BASIC)
-      //.post(Map("grant_type" -> Seq("authorization_code"), "code" -> Seq(token), "scope" -> Seq("identify")))
+      .withHttpHeaders("Authorization" -> token)
       .get()
-      .map(result => {
-        logger.error(result.status + "")
-        logger.error(result.body)
-        None
-      })
+      .map(_.body)
+      .map(Json.parse)
+      .map(_.asOpt[DiscordUser])
+
   }
 
 }

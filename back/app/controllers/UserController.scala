@@ -5,12 +5,13 @@ import model.User
 import play.api.libs.json._
 import play.api.mvc._
 import repo.UserRepo
+import security.{Security, SecurityUser, SecurityUserRepo}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UserController @Inject()
-    (userRepo : UserRepo, cc: ControllerComponents)
+    (userRepo : UserRepo, security: Security, securityUserRepo: SecurityUserRepo, cc: ControllerComponents)
     (implicit ec : ExecutionContext) extends AbstractController(cc) with StandardFormats {
 
   def getById(id : Long) = Action.async {
@@ -32,10 +33,20 @@ class UserController @Inject()
       request.body.validate[User].fold(
         errors =>
           Future {BadRequest(errors.mkString)},
-        user =>
-          userRepo.add(user)
-            .map(_ => Ok(""))
-            .recover {case ex => BadRequest(ex.getMessage)  }
+        user => {
+          Future {request.headers.get("Authorization").getOrElse("")}
+            .flatMap(security.getDiscordUserFromToken)
+            .flatMap {
+              case Some(discordUser) =>
+                userRepo.add(user)
+                  .map(id => securityUserRepo.add(SecurityUser(userId = id, securityId = discordUser.id, origin = "DISCORD")))
+                  .map(_ => Ok(""))
+                  .recover { case ex => BadRequest(ex.getMessage) }
+              case None =>
+                Future {BadRequest("Incorrect token")}
+            }
+
+        }
       )
   }
 

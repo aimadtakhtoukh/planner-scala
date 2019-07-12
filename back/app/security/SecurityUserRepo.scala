@@ -8,7 +8,7 @@ import slick.lifted.ProvenShape
 
 import scala.concurrent.{ExecutionContext, Future}
 
-case class SecurityUser(id : Option[Long], userId : Long, securityId : String, origin : String)
+case class SecurityUser(id : Option[Long] = None, userId : Long, securityId : String, origin : String)
 
 class SecurityUserRepo @Inject()
 (protected val userRepo: UserRepo)
