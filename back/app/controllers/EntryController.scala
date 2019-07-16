@@ -1,5 +1,6 @@
 package controllers
 
+import controllers.actions.{AnyTokenAllowed, AnyUserAllowed, UserAwareAction}
 import javax.inject.{Inject, Singleton}
 import model.Entry
 import play.api.Logging
@@ -11,22 +12,22 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class EntryController @Inject()
-  (entryRepo : EntryRepo, cc: ControllerComponents)
+  (entryRepo : EntryRepo, userAwareAction: UserAwareAction, cc: ControllerComponents)
   (implicit ec : ExecutionContext) extends AbstractController(cc) with Logging with StandardFormats {
 
-  def getById(id : Long) = Action.async {
+  def getById(id : Long) = userAwareAction.andThen(new AnyTokenAllowed).async {
       entryRepo.byId(id)
         .map(Json.toJson(_))
         .map(Ok(_))
   }
 
-  def getByUser(userId : Long) = Action.async {
+  def getByUser(userId : Long) = userAwareAction.andThen(new AnyTokenAllowed).async {
       entryRepo.byUser(userId)
         .map(Json.toJson(_))
         .map(Ok(_))
   }
 
-  def add() = Action.async(parse.json) {
+  def add() = userAwareAction.andThen(new AnyUserAllowed).async(parse.json) {
     implicit request =>
       request.body.validate[Entry].fold(
         errors =>
@@ -39,13 +40,17 @@ class EntryController @Inject()
             BadRequest(errors.mkString)
           },
         entry =>
-          entryRepo.add(entry)
-            .map(_ => Ok(""))
-            .recover {case ex => BadRequest(ex.getMessage)  }
+          if (request.user.exists(_.id.exists(_ == entry.userId))) {
+            entryRepo.add(entry)
+              .map(_ => Ok(""))
+              .recover { case ex => BadRequest(ex.getMessage) }
+          } else {
+            Future.successful(Forbidden("Wrong user"))
+          }
       )
   }
 
-  def withUser() = Action.async {
+  def withUser() = userAwareAction.andThen(new AnyTokenAllowed).async {
       entryRepo.usersWithEntries()
         .map(Json.toJson(_))
         .map(Ok(_))

@@ -15,12 +15,11 @@ scalaVersion := "2.12.2"
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-slick" % "3.0.0",
   "com.typesafe.play" %% "play-json" % "2.6.0",
-  "com.h2database" % "h2" % "1.4.199",
+  "mysql" % "mysql-connector-java" % "8.0.16",
   guice,
   ws,
   ehcache,
 
   "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0" % "test",
-  specs2 % Test
-
+  specs2 % Test,
 )

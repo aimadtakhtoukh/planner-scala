@@ -17,34 +17,32 @@ class EntryRepo @Inject()
 (implicit ec : ExecutionContext, protected val dbConfigProvider: DatabaseConfigProvider) extends HasDatabaseConfigProvider[JdbcProfile] {
   import profile.api._
 
-  implicit val availabilityMapper =
+  implicit val availabilityMapper: BaseColumnType[Availability] =
     MappedColumnType.base[Availability, String](
       e => e.toString,
       s => Availability.withName(s)
     )
 
-  implicit val localDateToDate =
+  implicit val localDateToDate: BaseColumnType[LocalDate] =
     MappedColumnType.base[LocalDate, Date](
       l => Date.valueOf(l),
       d => d.toLocalDate
     )
 
-  class Entries(tag : Tag) extends Table[Entry](tag, "entries") {
+  class Entries(tag : Tag) extends Table[Entry](tag, "entry") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def date = column[LocalDate]("date")
-    def available = column[Availability]("available")
+    def dispo = column[Availability]("dispo")
 
-    def userId = column[Long]("userId")
+    def userId = column[Long]("user_id")
     def userFk =
       foreignKey("USER_FK", userId, userRepo.users)(_.id, ForeignKeyAction.Restrict, ForeignKeyAction.Cascade)
 
     override def * : ProvenShape[Entry] =
-      (id.?, userId, date, available) <> (Entry.tupled, Entry.unapply)
+      (id.?, userId, date, dispo) <> (Entry.tupled, Entry.unapply)
   }
 
   val entries = TableQuery[Entries]
-  val setup = DBIO.seq(entries.schema.create)
-  val setupFuture: Future[Unit] = db.run(setup)
 
   def byId(id : Long) : Future[Option[Entry]] =
     db.run(entries.filter(_.id === id).result).map(_.headOption)

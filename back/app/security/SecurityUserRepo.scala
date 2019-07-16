@@ -8,7 +8,7 @@ import slick.lifted.ProvenShape
 
 import scala.concurrent.{ExecutionContext, Future}
 
-case class SecurityUser(id : Option[Long] = None, userId : Long, securityId : String, origin : String)
+case class SecurityUser(id : Option[Long] = None, userId : Long, securityId : String, `type` : String)
 
 class SecurityUserRepo @Inject()
 (protected val userRepo: UserRepo)
@@ -16,12 +16,12 @@ class SecurityUserRepo @Inject()
   extends HasDatabaseConfigProvider[JdbcProfile] {
   import profile.api._
 
-  class SecurityUsers(tag : Tag) extends Table[SecurityUser](tag, "security_users") {
+  class SecurityUsers(tag : Tag) extends Table[SecurityUser](tag, "security_user") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-    def securityId = column[String]("securityId")
-    def origin = column[String]("origin")
+    def securityId = column[String]("security_id")
+    def origin = column[String]("type")
 
-    def userId = column[Long]("userId")
+    def userId = column[Long]("user_id")
     def userFk =
       foreignKey("USER_FK", userId, userRepo.users)(_.id, ForeignKeyAction.Restrict, ForeignKeyAction.Cascade)
 
@@ -31,8 +31,6 @@ class SecurityUserRepo @Inject()
   }
 
   val securityUsers = TableQuery[SecurityUsers]
-  val setup = DBIO.seq(securityUsers.schema.create)
-  val setupFuture: Future[Unit] = db.run(setup)
 
   def byId(id : Long) : Future[Option[SecurityUser]] =
     db.run(securityUsers.filter(_.id === id).result).map(_.headOption)

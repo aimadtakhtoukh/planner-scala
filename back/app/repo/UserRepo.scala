@@ -13,7 +13,7 @@ class UserRepo @Inject()
   (implicit ec : ExecutionContext, protected val dbConfigProvider: DatabaseConfigProvider) extends HasDatabaseConfigProvider[JdbcProfile] {
   import profile.api._
 
-  class Users(tag: Tag) extends Table[User](tag, "users") {
+  class Users(tag: Tag) extends Table[User](tag, "user") {
     def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def name: Rep[String] = column[String]("name", O.Unique)
 
@@ -21,9 +21,6 @@ class UserRepo @Inject()
   }
 
   val users = TableQuery[Users]
-
-  val setup = DBIO.seq(users.schema.create, users += User(Some(1), "Aimad"))
-  val setupFuture: Future[Unit] = db.run(setup)
 
   def all() : Future[List[User]] = db.run(users.result).map(_.toList)
 
