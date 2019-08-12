@@ -15,8 +15,8 @@ case class DiscordUser(id : String, username : String, discriminator : String, a
 class Security @Inject()(wsClient: WSClient, securityUserRepo: SecurityUserRepo)(implicit ec : ExecutionContext) extends Logging with StandardFormats {
   val discordOAuth = OAuthApp(
     id = "DISCORD",
-    clientId = "468461306031243264",
-    clientSecret = "KOjFMglvFPVrN_ZWABqIjmrFaX7EAtAE",
+    clientId = "609309569721565184",
+    clientSecret = "gm5V1XzyeccVOvLLtZ3b-g1d1kkBfEtl",
     authorizeUrl = "https://discordapp.com/api/oauth2/authorize",
     tokenUrl = "https://discordapp.com/api/oauth2/token",
     userInfoUrl = "https://discordapp.com/api/users/@me",

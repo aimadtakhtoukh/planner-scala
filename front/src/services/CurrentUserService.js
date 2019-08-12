@@ -1,9 +1,10 @@
-import axios from 'axios'
+import axios from './axios_default'
 
-class CurrentUserService {
+export default class CurrentUserService {
 
-    getSelf(token) {
-        axios.get("")
+    static async getSelf(token) {
+        let c = await axios.client(token).get("security/@me");
+        return await c.data;
     }
 
 }

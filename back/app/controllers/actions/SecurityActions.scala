@@ -22,7 +22,7 @@ class UserAwareAction @Inject()(val parser: BodyParsers.Default, security : Secu
           discordUserOption <- security.getDiscordUserFromToken(authorization)
           securityUserOption <- discordUserOption.map(_.id).map(securityUserRepo.bySecurityId).getOrElse(Future.successful(None))
           userOption <- securityUserOption.map(_.userId).map(userRepo.byId).getOrElse(Future.successful(None))
-        } yield {logger.error(authorization); logger.error(securityUserOption.toString); logger.error(userOption.toString); UserRequest(Some(authorization), userOption, securityUserOption, request)}
+        } yield UserRequest(Some(authorization), userOption, securityUserOption, request)
       case None => Future.successful(UserRequest(None, None, None, request))
     }
 }

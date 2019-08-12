@@ -8,14 +8,30 @@
     </a>
 
     <div class="right-floating">
-      <span>Aimad</span>
+      <span>{{user}}</span>
       <button class="btn disconnect-button">Déconnexion</button>
     </div>
   </nav>
 </template>
 
 <script>
-
+import CurrentUserService from "../services/CurrentUserService"
+export default {
+    name : 'navbar',
+    data() {
+        return {
+            user : {id : 0, name : ""}
+        }
+    },
+    methods : {
+        getUser() {
+            CurrentUserService.getSelf("9hySlMzJvCzJKsns4IYXBmM6SXma3Z").then(user => console.log(user))//this.user = user)
+        }
+    },
+    mounted() {
+        this.getUser()
+    }
+}
 </script>
 
 <style lang="scss">
