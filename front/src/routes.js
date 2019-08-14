@@ -7,7 +7,7 @@ const TokenHandling = {template : "<div>Token!</div>"};
 
 const router = new VueRouter({
     routes : [
-        {path : '/token/discord', component: TokenHandling}
+        {path : '/**', component: TokenHandling}
     ]
 });
 
