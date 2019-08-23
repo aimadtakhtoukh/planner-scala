@@ -3,7 +3,9 @@
     <div class="navigation-bar">
       <navbar></navbar>
     </div>
-    <router-view></router-view>
+    <section class="main-body">
+      <router-view></router-view>
+    </section>
   </div>
 </template>
 

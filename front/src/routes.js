@@ -4,7 +4,7 @@ import TokenHandling from './components/TokenHandling'
 
 Vue.use(VueRouter);
 
-const Default = {template : "<div>Pas là frère</div>"};
+const Default = {template : '<div></div>'};
 
 const router = new VueRouter({
     routes : [

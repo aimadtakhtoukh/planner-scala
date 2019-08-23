@@ -29,7 +29,7 @@ export default {
     },
     methods : {
         getUser() {
-            CurrentUserService.getSelf("9hySlMzJvCzJKsns4IYXBmM6SXma3Z").then(user => this.user = user)
+            CurrentUserService.getSelf().then(user => this.user = user)
         },
         discordUrl : () => "https://discordapp.com/api/oauth2/authorize?client_id=609309569721565184&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Ftoken%2Fdiscord%2F&response_type=code&scope=identify"
     },

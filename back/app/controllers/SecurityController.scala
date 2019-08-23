@@ -19,12 +19,19 @@ class SecurityController @Inject()
     implicit request =>
       Future {request.headers.get("Authorization").getOrElse("")}
         .flatMap(security.getDiscordUserFromToken)
-        .map(Json.toJson(_))
-        .map(Ok(_))
+        .map(
+          _
+            .map(Json.toJson(_))
+            .map(Ok(_))
+            .getOrElse(Unauthorized("{\"error\" : \"Unknown token\"}"))
+        )
   }
 
   def getUser() = userAwareAction {
     implicit request =>
-      Ok(Json.toJson(request.user))
+      request.user
+          .map(Json.toJson(_))
+          .map(Ok(_))
+          .getOrElse(Unauthorized("{\"error\" : \"Unknown user\"}"))
   }
 }

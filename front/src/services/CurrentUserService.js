@@ -1,10 +1,13 @@
 import axios from './axios_default'
+import TokenService from './TokenService'
 
-export default class CurrentUserService {
-
-    static async getSelf(token) {
-        let c = await axios.client(token).get("security/@me");
+const CurrentUserService = {
+    async getSelf() {
+        const token = TokenService.getToken();
+        if (token == null) return await null;
+        let c = await axios.client().get("security/@me");
         return await c.data;
     }
+};
 
-}
+export default CurrentUserService
