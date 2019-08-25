@@ -7,8 +7,8 @@
     export default {
         name: "TokenHandling",
         mounted() {
-            const code = this.$route.query.code.toString();
-            TokenService.saveToken(code);
+            const accessToken = this.$route.query.access_token.toString();
+            TokenService.saveToken(accessToken);
             this.$router.push("/")
         }
     }

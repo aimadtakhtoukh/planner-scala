@@ -5,6 +5,9 @@ const TokenService = {
     },
     getToken() {
         return localStorage.getItem(accessTokenKey);
+    },
+    removeToken() {
+        localStorage.removeItem(accessTokenKey)
     }
 };
 export default TokenService

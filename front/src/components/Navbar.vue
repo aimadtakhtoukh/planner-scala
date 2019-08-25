@@ -6,80 +6,104 @@
         src="/foresight-main.svg"
         alt="Calendar"/>
     </a>
-
     <div class="right-floating" v-if="connected">
+      <span>{{user.name}}</span>
       <span>{{user}}</span>
-      <button class="btn disconnect-button">Déconnexion</button>
-    </div>
-    <div class="right-floating" v-else>
-      <a class="btn connect-button" :href="discordUrl()">Se connecter</a>
+      <button class="btn disconnect-button" v-on:click="disconnect">Déconnexion</button>
     </div>
   </nav>
 </template>
 
 <script>
-import CurrentUserService from "../services/CurrentUserService"
-export default {
+  //import UserService from "../services/UserService"
+  import TokenService from "../services/TokenService";
+  import CurrentUser from "../services/CurrentUser";
+  export default {
     name : 'navbar',
     data() {
-        return {
-            connected : false,
-            user : {id : 0, name : ""}
-        }
+      return {
+        connected : false,
+        user : {id : 0, name : ""}
+      }
     },
     methods : {
-        getUser() {
-            CurrentUserService.getSelf().then(user => this.user = user)
-        },
-        discordUrl : () => "https://discordapp.com/api/oauth2/authorize?client_id=609309569721565184&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Ftoken%2Fdiscord%2F&response_type=code&scope=identify"
+      getUser() {
+        if (!CurrentUser.user) {
+          CurrentUser.updateUser().then(() => this.updateView())
+        } else {
+          this.updateView()
+        }
+      },
+      disconnect() {
+        TokenService.removeToken();
+        CurrentUser.removeUser();
+        this.connected = false;
+        this.user = {id : 0, name : ""};
+        this.$router.push("/");
+      },
+      updateView() {
+        this.connected = true;
+        this.user = CurrentUser.user;
+      },
+      discordUrl : () => "/api/discord/login"
     },
     mounted() {
+      this.getUser()
+    },
+    watch: {
+      "$route"(to, from) {
         this.getUser()
+      }
     }
-}
+  }
 </script>
 
 <style lang="scss">
-.topnav {
-  background-color: #333;
-  overflow: hidden;
-  display: flex;
-  width: 100%;
-
-  span, a {
-    align-self: flex-start;
-    display: block;
-    color: #f2f2f2;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    font-size: 17px;
-  }
-
-  img.logo {
-    height: 70px;
-    width: 210px;
-  }
-
-  .right-floating {
-    align-self: center;
-    margin-left: auto;
-    height : 100%;
-    margin-right : 10px;
+  .topnav {
+    background-color: #333;
+    overflow: hidden;
     display: flex;
-    flex-direction: row;
+    width: 100%;
+    margin-bottom: 20px;
 
-    .disconnect-button {
-      background-color : #7289da;
-      color : white;
-      align-self: center;
+    * {
+      background-color: #333;
     }
 
-    .connect-button {
-      background-color : #7289da;
-      color : white;
+    span, a {
+      align-self: flex-start;
+      display: block;
+      color: #f2f2f2;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-size: 17px;
+    }
+
+    img.logo {
+      height: 70px;
+      width: 210px;
+    }
+
+    .right-floating {
       align-self: center;
+      margin-left: auto;
+      height : 100%;
+      margin-right : 10px;
+      display: flex;
+      flex-direction: row;
+
+      .disconnect-button {
+        background-color : #7289da;
+        color : white;
+        align-self: center;
+      }
+
+      .connect-button {
+        background-color : #7289da;
+        color : white;
+        align-self: center;
+      }
     }
   }
-}
 </style>
