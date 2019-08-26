@@ -22,9 +22,6 @@
               this.$router.push("/main")
             }
           })
-          .catch(error => {
-            console.error(error);
-          })
       }
     }
   }

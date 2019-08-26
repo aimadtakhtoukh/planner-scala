@@ -1,99 +1,81 @@
 <template>
-  <div class="column" :class="{'edited' : isColumnEditable()}">
-    <div class="header">
-      <span>{{user.name}}</span>
-      <a v-if="isEditable()" @click="editColumn()">
-        <font-awesome-icon icon="edit"></font-awesome-icon>
-      </a>
+    <div>
+        <div class="column">
+            <div class="header">
+                <span>{{user.name}}</span>
+                <a v-if="isConnectedUsers()" @click="editColumn()">
+                    <font-awesome-icon icon="edit"></font-awesome-icon>
+                </a>
+            </div>
+            <case-container
+                    v-for="day in selectableDays"
+                    :date="day"
+                    :isConnectedUsers="isConnectedUsers()"
+                    :userId="userId"
+                    :key="day.format('YYYY-MM-DD')"
+                    ref="case">
+            </case-container>
+        </div>
     </div>
-    <case-container
-      v-for="day in selectableDays"
-      :day="day"
-      :editable="isEditable()"
-      :userId="userId"
-      :key="day.format('YYYY-MM-DD')">
-    </case-container>
-<!--    :model="getEntryFromDate(day.format('YYYY-MM-DD'))"-->
-  </div>
 </template>
 
 <script>
-  import CurrentUser from "../../services/CurrentUser";
-  import CaseContainer from "./CaseContainer";
-  import PlannerModel from "../../services/PlannerModel";
+    import store from "../../services/VuexStore";
+    import CurrentUser from "../../services/CurrentUser";
+    import CaseContainer from "./CaseContainer";
 
-  export default {
-    name: "Column",
-    components : {
-      CaseContainer
-    },
-    props: {
-      //userWithEntries : {type : Object, required: true, default : {user : {id : 0, name : "..."}, entries : []}},
-      selectableDays : {type : Array, required : true, default:() => []},
-      userId : {type : Number, required: true, default: 0}
-    },
-    computed:  {
-      user : () => PlannerModel.getUserWithEntriesById(this.userId).user,
-      entries : () => PlannerModel.getUserWithEntriesById(this.userId).entries
-         .map(entry => {return {entry : entry, editable : false}})
-    },
-    methods: {
-      /*
-      getEntryFromDate(date) {
-        let entry =  PlannerModel.getEntryForUser(this.userId, date); //this.entries.filter(c => c.entry.date === date)[0];
-        if (!entry) {
-          // Si l'entrée n'est pas définie, on en crée une fausse, et on l'ajoute aux entrées existantes, pour
-          // conserver son état jusqu'à l'envoi de la variable.
-          entry = {
-            entry : {
-              dispo: "UNDEFINED",
-              userId: this.user.id,
-              date: date
-            },
-            editable: false
-          };
-          this.entries.push(entry);
-        }
-        return entry;
-      },
-       */
-      editColumn() {this.entries.forEach(e => e.editable = true)},
-      isColumnEditable() {return this.entries.map(e => e.editable).some(e => e === true)},
-      isEditable() {return CurrentUser.user.id === this.user.id}
+    export default {
+        name: "Column",
+        components : {
+            CaseContainer
+        },
+        store,
+        props: {
+            selectableDays : {type : Array, required : false, default:() => []},
+            userId : {type : Number, required: false, default: 0}
+        },
+        methods : {
+            editColumn() {this.$refs.case.forEach(c => c.onCaseClick())},
+            isConnectedUsers() {return CurrentUser.user.id === this.user.id}
+        },
+        computed:  {
+            user() {
+                return store.getters.getUserWithEntriesById(this.userId).user
+            }
+        },
     }
-  }
 </script>
 
 <style scoped lang="scss">
-  .column {
-    border-right: 1px solid grey;
-    min-width: 80px;
-    flex: 1;
+    .column {
+        border-right: 1px solid grey;
+        min-width: 80px;
+        flex: 1;
 
-    &.edited {
-      min-width: 160px;
+        &.edited {
+            min-width: 160px;
+        }
+
+        .case {
+            width: 100%;
+            white-space: nowrap;
+
+            span {
+                width: 100%;
+                text-align: center;
+            }
+        }
     }
 
-    .case {
-      width: 100%;
-      white-space: nowrap;
+    .header {
+        border-bottom: 1px solid grey;
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: center;
+        white-space: nowrap;
 
-      span {
-        width: 100%;
-        text-align: center;
-      }
+        a {
+            margin-left: 12px;
+        }
     }
-  }
-
-  .header {
-    border-bottom: 1px solid grey;
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: center;
-    white-space: nowrap;
-
-    a {
-      margin-left: 12px;
-    }
-  }
 </style>
