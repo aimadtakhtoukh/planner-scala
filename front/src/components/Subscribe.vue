@@ -2,7 +2,7 @@
   <section class="subscribe">
     <h3>Tu n'es pas encore inscrit ! Dernier détail, ajoute un pseudo.</h3>
     <input class="name-input" type="text" placeholder="Nom" v-model="name"/>
-    <button class="btn" v-on:click="subscribe()">Se connecter</button>
+    <button class="btn" @click="subscribe()">Se connecter</button>
   </section>
 </template>
 

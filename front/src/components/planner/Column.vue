@@ -1,22 +1,26 @@
 <template>
-  <div class="column" v-bind:class="{'edited' : isColumnEditable()}">
+  <div class="column" :class="{'edited' : isColumnEditable()}">
     <div class="header">
       <span>{{user.name}}</span>
-      <a v-if="isEditable()" v-on:click="editColumn()">
+      <a v-if="isEditable()" @click="editColumn()">
         <font-awesome-icon icon="edit"></font-awesome-icon>
       </a>
     </div>
     <case-container
       v-for="day in selectableDays"
-      v-bind:model="getEntryFromDate(day.format('YYYY-MM-DD'))"
-      v-bind:editable="isEditable()">
+      :day="day"
+      :editable="isEditable()"
+      :userId="userId"
+      :key="day.format('YYYY-MM-DD')">
     </case-container>
+<!--    :model="getEntryFromDate(day.format('YYYY-MM-DD'))"-->
   </div>
 </template>
 
 <script>
   import CurrentUser from "../../services/CurrentUser";
   import CaseContainer from "./CaseContainer";
+  import PlannerModel from "../../services/PlannerModel";
 
   export default {
     name: "Column",
@@ -24,18 +28,19 @@
       CaseContainer
     },
     props: {
-      userWithEntries : {type : Object, required: true, default : {user : {id : 0, name : "..."}, entries : []}},
-      selectableDays : {type : Array, required : true, default: []}
+      //userWithEntries : {type : Object, required: true, default : {user : {id : 0, name : "..."}, entries : []}},
+      selectableDays : {type : Array, required : true, default:() => []},
+      userId : {type : Number, required: true, default: 0}
     },
-    data() {
-      return {
-        user : this.userWithEntries.user,
-        entries : this.userWithEntries.entries.map(entry => {return {entry : entry, editable : false}})
-      }
+    computed:  {
+      user : () => PlannerModel.getUserWithEntriesById(this.userId).user,
+      entries : () => PlannerModel.getUserWithEntriesById(this.userId).entries
+         .map(entry => {return {entry : entry, editable : false}})
     },
     methods: {
+      /*
       getEntryFromDate(date) {
-        let entry =  this.entries.filter(c => c.entry.date === date)[0];
+        let entry =  PlannerModel.getEntryForUser(this.userId, date); //this.entries.filter(c => c.entry.date === date)[0];
         if (!entry) {
           // Si l'entrée n'est pas définie, on en crée une fausse, et on l'ajoute aux entrées existantes, pour
           // conserver son état jusqu'à l'envoi de la variable.
@@ -51,9 +56,9 @@
         }
         return entry;
       },
-      getEntriesForUser() {return this.entries.filter(e => e.entry.userId === this.user.id)},
-      editColumn() {this.getEntriesForUser().forEach(e => e.editable = true)},
-      isColumnEditable() {return this.getEntriesForUser().map(e => e.editable).some(e => e === true)},
+       */
+      editColumn() {this.entries.forEach(e => e.editable = true)},
+      isColumnEditable() {return this.entries.map(e => e.editable).some(e => e === true)},
       isEditable() {return CurrentUser.user.id === this.user.id}
     }
   }

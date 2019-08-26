@@ -1,17 +1,17 @@
 <template>
   <div class="selector">
-    <button class="btn btn-xs on" v-on:click="onButtonClick('ON')">
+    <button class="btn btn-xs on" @click="onButtonClick('ON')">
       <font-awesome-icon icon="check"></font-awesome-icon>
     </button>
-    <button class="btn btn-xs off" v-on:click="onButtonClick('OFF')">
+    <button class="btn btn-xs off" @click="onButtonClick('OFF')">
       <font-awesome-icon icon="ban"></font-awesome-icon>
     </button>
-    <button class="btn btn-xs maybe" v-on:click="onButtonClick('MAYBE')">
+    <button class="btn btn-xs maybe" @click="onButtonClick('MAYBE')">
       <span>(</span>
       <font-awesome-icon icon="check"></font-awesome-icon>
       <span>)</span>
     </button>
-    <button class="btn btn-xs planning" v-on:click="onButtonClick('PLANNING')">
+    <button class="btn btn-xs planning" @click="onButtonClick('PLANNING')">
       <span>!</span>
     </button>
   </div>

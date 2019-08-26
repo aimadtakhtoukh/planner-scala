@@ -8,52 +8,35 @@
     </a>
     <div class="right-floating" v-if="connected">
       <span>{{user.name}}</span>
-      <span>{{user}}</span>
-      <button class="btn disconnect-button" v-on:click="disconnect">Déconnexion</button>
+      <button class="btn disconnect-button" @click="disconnect">Déconnexion</button>
     </div>
   </nav>
 </template>
 
 <script>
-  //import UserService from "../services/UserService"
   import TokenService from "../services/TokenService";
   import CurrentUser from "../services/CurrentUser";
   export default {
     name : 'navbar',
-    data() {
-      return {
-        connected : false,
-        user : {id : 0, name : ""}
-      }
+    computed : {
+      user : () => CurrentUser.user,
+      connected : () => !!CurrentUser.user
     },
     methods : {
       getUser() {
         if (!CurrentUser.user) {
-          CurrentUser.updateUser().then(() => this.updateView())
-        } else {
-          this.updateView()
+          CurrentUser.updateUser()
         }
       },
       disconnect() {
         TokenService.removeToken();
         CurrentUser.removeUser();
-        this.connected = false;
-        this.user = {id : 0, name : ""};
         this.$router.push("/");
-      },
-      updateView() {
-        this.connected = true;
-        this.user = CurrentUser.user;
       },
       discordUrl : () => "/api/discord/login"
     },
     mounted() {
       this.getUser()
-    },
-    watch: {
-      "$route"(to, from) {
-        this.getUser()
-      }
     }
   }
 </script>

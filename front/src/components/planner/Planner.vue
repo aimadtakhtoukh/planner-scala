@@ -5,7 +5,7 @@
         <span>Jour</span>
       </div>
       <div class="left-body">
-        <div class="case" v-for="day in selectableDays">
+        <div class="case" v-for="day in selectableDays" :key="day.format('ddddDD')">
           <span>{{day.format("dddd DD")}}</span>
         </div>
       </div>
@@ -15,8 +15,9 @@
       <column
         class="column"
         v-for="userWithEntries in usersWithEntries"
-        :userWithEntries="userWithEntries"
-        :selectableDays="selectableDays">
+        :selectableDays="selectableDays"
+        :userId="usersWithEntries.user.id"
+        :key="userWithEntries.user.id">
       </column>
     </div>
   </section>
@@ -24,42 +25,38 @@
 
 <script>
   import DateUtils from "../../services/DateUtils";
-  import UserService from "../../services/UserService";
   import EntryService from "../../services/EntryService";
   import Column from "./Column";
   import CurrentUser from "../../services/CurrentUser";
+  import PlannerModel from "../../services/PlannerModel";
 
   export default {
     name: "Planner",
     components : {
       Column
     },
-    data() {
-      return {
-        selectableDays : [],
-        usersWithEntries : []
-      }
+    computed:  {
+      selectableDays : () => DateUtils.getEditedDateRange(),
+      usersWithEntries : () => PlannerModel.usersWithEntries
     },
-    methods: {
-      init() {
-        this.selectableDays = DateUtils.getEditedDateRange();
-        const user = CurrentUser.user;
-        EntryService.getUsersAndEntries().then(
+    mounted() {
+      EntryService.getUsersAndEntries()
+        .then(
           (usersWithEntries) => {
-            const id = user.id;
-            this.usersWithEntries = usersWithEntries.sort(
-              (user1, user2) => {
-                if (user1.user.id === id) {return -1}
-                if (user2.user.id === id) {return 1}
-                return 0
-              }
+            const id = CurrentUser.user.id;
+            PlannerModel.saveNewModel(
+              usersWithEntries
+                .filter(userWithEntry => !!userWithEntry.entries)
+                .sort(
+                  (user1, user2) => {
+                    if (user1.user.id === id) {return -1}
+                    if (user2.user.id === id) {return 1}
+                    return 0
+                  }
+                )
             )
           }
         )
-      }
-    },
-    mounted() {
-      this.init()
     }
   }
 </script>

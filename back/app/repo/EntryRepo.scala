@@ -1,11 +1,12 @@
 package repo
 
 import java.sql.Date
-import java.time.LocalDate
+import java.time.{LocalDate, ZoneId}
 
 import javax.inject.Inject
 import model.Availability.Availability
 import model.{Availability, Entry, UserWithEntries}
+import play.api.Logging
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.lifted._
@@ -14,7 +15,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class EntryRepo @Inject()
 (protected val userRepo: UserRepo)
-(implicit ec : ExecutionContext, protected val dbConfigProvider: DatabaseConfigProvider) extends HasDatabaseConfigProvider[JdbcProfile] {
+(implicit ec : ExecutionContext, protected val dbConfigProvider: DatabaseConfigProvider) extends HasDatabaseConfigProvider[JdbcProfile] with Logging {
   import profile.api._
 
   implicit val availabilityMapper: BaseColumnType[Availability] =
@@ -25,7 +26,7 @@ class EntryRepo @Inject()
 
   implicit val localDateToDate: BaseColumnType[LocalDate] =
     MappedColumnType.base[LocalDate, Date](
-      l => Date.valueOf(l),
+      l => Date.valueOf(l.plusDays(1)), //TODO Fix!
       d => d.toLocalDate
     )
 
@@ -61,6 +62,7 @@ class EntryRepo @Inject()
           .groupBy(_._1)
           .mapValues{_.collect {case (_, Some(e)) => e}.toList}
           .map(UserWithEntries.tupled)
+          .map(userWithEntries => UserWithEntries(user = userWithEntries.user, entries = userWithEntries.entries.groupBy(_.date).toList.map {case (_, e) => e.last}))
           .toList
       )
   }
