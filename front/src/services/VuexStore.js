@@ -28,10 +28,10 @@ const store = new Vuex.Store({
         }
     },
     actions: {
-        update(context) {
+        update({commit}) {
             return EntryService.getUsersAndEntries().then(
                 (usersWithEntriesRaw) => {
-                    const id = (CurrentUser.user || {id: 0}).id;
+                    const id = (CurrentUser.state.user || {id: 0}).id;
                     const usersWithEntries = usersWithEntriesRaw
                         .filter(userWithEntry => !!userWithEntry.entries)
                         .sort(
@@ -45,7 +45,7 @@ const store = new Vuex.Store({
                                 return 0
                             }
                         )
-                    context.commit("update", usersWithEntries)
+                    commit("update", usersWithEntries)
                 }
             )
         }

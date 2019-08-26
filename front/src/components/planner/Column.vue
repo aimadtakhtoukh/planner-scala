@@ -36,7 +36,7 @@
         },
         methods : {
             editColumn() {this.$refs.case.forEach(c => c.onCaseClick())},
-            isConnectedUsers() {return CurrentUser.user.id === this.user.id}
+            isConnectedUsers() {return CurrentUser.state.user.id === this.user.id}
         },
         computed:  {
             user() {

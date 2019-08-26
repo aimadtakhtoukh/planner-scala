@@ -34,11 +34,8 @@
                     dispo : dispo,
                     date: this.date.format("YYYY-MM-DD")
                 })
-                    .then(store.dispatch("update")) //TODO bug de meeeeeerde
-                    .then(function () {
-                        this.$emit("entrysent")
-                    }
-                )
+                .then(() => store.dispatch("update"))
+                .then(() => this.$emit("entrysent"))
             }
         }
     }

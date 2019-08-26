@@ -1,11 +1,29 @@
 import UserService from "./UserService";
+import Vuex from "vuex";
 
-const CurrentUser = {
-  user : {id : 3, name : "Aimad"},
-  updateUser : function() {return Promise.resolve("Quelque chose")},//return UserService.getSelf().then(user => CurrentUser.user = user)},
-  removeUser : function () {/*CurrentUser.user = {}*/}
-};
+const store = new Vuex.Store({
+  state: {
+    user : {},
+    connected : false
+  },
+  mutations: {
+    updateUser(state, user) {
+      state.user = user;
+      state.connected = Object.keys(user).length !== 0
+    },
+    removeUser(state) {
+      state.user = {};
+      state.connected = false
+    }
+  },
+  actions: {
+    updateUser({commit}) {
+      return UserService.getSelf().then(user => {
+        commit("updateUser", user);
+        return user
+      })
+    }
+  }
+});
 
-//CurrentUser.updateUser();
-
-export default CurrentUser
+export default store

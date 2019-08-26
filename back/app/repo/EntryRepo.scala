@@ -26,7 +26,7 @@ class EntryRepo @Inject()
 
   implicit val localDateToDate: BaseColumnType[LocalDate] =
     MappedColumnType.base[LocalDate, Date](
-      l => Date.valueOf(l.plusDays(1)), //TODO Fix!
+      l => Date.valueOf(l),
       d => d.toLocalDate
     )
 

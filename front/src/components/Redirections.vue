@@ -14,7 +14,7 @@
       if (!TokenService.getToken()) {
         this.$router.push("/not-logged")
       } else {
-        CurrentUser.updateUser()
+        CurrentUser.dispatch("updateUser")
           .then(response => {
             if (!response) {
               this.$router.push("/subscribe")

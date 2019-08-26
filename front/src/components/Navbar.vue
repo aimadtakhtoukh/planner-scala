@@ -6,8 +6,8 @@
         src="/foresight-main.svg"
         alt="Calendar"/>
     </a>
-    <div class="right-floating" v-if="connected">
-      <span>{{user.name}}</span>
+    <div class="right-floating" v-show="connected">
+      <span>{{user.name || ""}}</span>
       <button class="btn disconnect-button" @click="disconnect">Déconnexion</button>
     </div>
   </nav>
@@ -19,24 +19,19 @@
   export default {
     name : 'navbar',
     computed : {
-      user : () => CurrentUser.user,
-      connected : () => !!CurrentUser.user
+      user : () => CurrentUser.state.user,
+      connected : () => CurrentUser.state.connected
     },
     methods : {
-      getUser() {
-        if (!CurrentUser.user) {
-          CurrentUser.updateUser()
-        }
-      },
       disconnect() {
         TokenService.removeToken();
-        CurrentUser.removeUser();
+        CurrentUser.commit("removeUser");
         this.$router.push("/");
       },
       discordUrl : () => "/api/discord/login"
     },
     mounted() {
-      this.getUser()
+      CurrentUser.dispatch("updateUser")
     }
   }
 </script>

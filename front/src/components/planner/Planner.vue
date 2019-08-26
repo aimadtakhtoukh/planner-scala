@@ -25,8 +25,6 @@
 <script>
     import DateUtils from "../../services/DateUtils";
     import store from "../../services/VuexStore";
-    //import EntryService from "../../services/EntryService";
-    //import CurrentUser from "../../services/CurrentUser";
     import Column from "./Column";
 
     export default {
@@ -41,24 +39,6 @@
         },
         mounted() {
             this.$store.dispatch("update")
-            /*
-            EntryService.getUsersAndEntries()
-                .then(
-                    (usersWithEntries) => {
-                        const id = (CurrentUser.user || {id : 0}).id;
-                        this.$store.commit("update",
-                            usersWithEntries
-                                .filter(userWithEntry => !!userWithEntry.entries)
-                                .sort(
-                                    (user1, user2) => {
-                                        if (user1.user.id === id) {return -1}
-                                        if (user2.user.id === id) {return 1}
-                                        return 0
-                                    }
-                                ))
-                    }
-                )
-             */
         }
     }
 </script>
