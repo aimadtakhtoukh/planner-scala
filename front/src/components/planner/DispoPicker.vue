@@ -47,8 +47,8 @@
 
         .button {
             flex : 1;
-            width: 24px;
-            max-height: 24px;
+            width: 40px;
+            height: 24px;
             white-space: nowrap;
             text-align: center;
             padding: 0;

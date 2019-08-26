@@ -1,21 +1,19 @@
 <template>
-    <div>
-        <div class="column">
-            <div class="header">
-                <span>{{user.name}}</span>
-                <a v-if="isConnectedUsers()" @click="editColumn()">
-                    <font-awesome-icon icon="edit"></font-awesome-icon>
-                </a>
-            </div>
-            <case-container
-                    v-for="day in selectableDays"
-                    :date="day"
-                    :isConnectedUsers="isConnectedUsers()"
-                    :userId="userId"
-                    :key="day.format('YYYY-MM-DD')"
-                    ref="case">
-            </case-container>
+    <div class="column" v-bind:class="{'edited' : isColumnEdited}">
+        <div class="header">
+            <span>{{user.name}}</span>
+            <a v-if="isConnectedUsers()" @click="editColumn()">
+                <font-awesome-icon icon="edit"></font-awesome-icon>
+            </a>
         </div>
+        <case-container
+                v-for="day in selectableDays"
+                :date="day"
+                :isConnectedUsers="isConnectedUsers()"
+                :userId="userId"
+                :key="day.format('YYYY-MM-DD')"
+                ref="case">
+        </case-container>
     </div>
 </template>
 
@@ -41,6 +39,9 @@
         computed:  {
             user() {
                 return store.getters.getUserWithEntriesById(this.userId).user
+            },
+            isColumnEdited() {
+                return (this.$refs.case || []).map(c => c.editing).some(e => e === true)
             }
         },
     }

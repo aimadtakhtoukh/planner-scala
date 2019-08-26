@@ -37,6 +37,7 @@
 <style scoped lang="scss">
     .case {
         text-align: center;
+        height: 24px;
     }
 
     .on, .on * {

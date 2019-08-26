@@ -15,6 +15,7 @@
     import store from "../../services/VuexStore";
     import Case from "./Case";
     import DispoPicker from "./DispoPicker";
+    import CurrentUser from "../../services/CurrentUser";
 
     export default {
         name: "CaseContainer",
@@ -36,7 +37,9 @@
         },
         methods : {
             onCaseClick() {
-                this.editing = true;
+                if (CurrentUser.state.user.id === this.userId) {
+                    this.editing = true;
+                }
             },
             onEntrySent() {
                 this.editing = false;
