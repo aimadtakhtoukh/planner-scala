@@ -1,3 +1,8 @@
+const expressAPI = require("./vue-cli-serve");
+
 module.exports = {
-    runtimeCompiler: true
+    runtimeCompiler: true,
+    devServer : {
+        before : expressAPI
+    }
 };

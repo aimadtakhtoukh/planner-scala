@@ -8,8 +8,10 @@ const store = new Vuex.Store({
   },
   mutations: {
     updateUser(state, user) {
-      state.user = user;
-      state.connected = Object.keys(user).length !== 0
+      if (user) {
+        state.user = user;
+        state.connected = Object.keys(user).length !== 0
+      }
     },
     removeUser(state) {
       state.user = {};
