@@ -36,11 +36,11 @@ if (securityEnabled) {
     ca : fs.readFileSync(path.join(credentialPath, 'chain.pem'))
   };
   const server = https.createServer(credentials, app);
-  server.listen(8080, () => {
+  server.listen(2443, () => {
     console.log('Secured server started!');
   });
 } else {
-  app.listen(8080, () => {
+  app.listen(2443, () => {
     console.log('Unsecured server started!');
   });
 }
