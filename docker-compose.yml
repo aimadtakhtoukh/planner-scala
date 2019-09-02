@@ -7,4 +7,6 @@ services:
     container_name: foresight_front
     ports:
       - "2443:2443"
+    env_file:
+      - ./front/env.properties
     restart: "always"
