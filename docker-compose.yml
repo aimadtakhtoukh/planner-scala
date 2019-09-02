@@ -19,8 +19,6 @@ services:
       - "3443:9000"
     env_file:
       - ./back/env.properties
-    volumes:
-      - certs:/certs
     restart: always
   front:
     build:
