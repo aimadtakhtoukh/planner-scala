@@ -2,7 +2,7 @@ FROM node:8.12.0-alpine
 WORKDIR /app
 COPY src ./src
 COPY server ./server
-COPY vue.config.js package*.json ./
+COPY vue.config.js vue-cli-serve.js package*.json ./
 RUN npm install
 RUN npm run build
 WORKDIR /app/server
