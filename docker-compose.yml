@@ -1,5 +1,27 @@
 version: "3.7"
 services:
+  db:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    container_name: foresight_db
+    env_file:
+      - ./db/env.properties
+    volumes:
+      - data:/var/lib/mysql
+    restart: always
+  back:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: foresight_back
+    ports:
+      - "3443:9000"
+    env_file:
+      - ./back/env.properties
+    volumes:
+      - certs:/certs
+    restart: always
   front:
     build:
       context: ./front
@@ -10,3 +32,10 @@ services:
     env_file:
       - ./front/env.properties
     restart: "always"
+volumes:
+  data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: ${PATH_TO_DATA}
