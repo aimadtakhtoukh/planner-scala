@@ -2,7 +2,7 @@ package security
 
 import controllers.StandardFormats
 import javax.inject.Inject
-import play.api.Logging
+import play.api.{Configuration, Logging}
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 
@@ -12,15 +12,15 @@ case class OAuthApp(id : String, clientId : String, clientSecret : String, autho
 
 case class DiscordUser(id : String, username : String, discriminator : String, avatar: String, bot : Option[Boolean], mfa_enabled : Boolean, locale : String, verified : Option[String])
 
-class Security @Inject()(wsClient: WSClient, securityUserRepo: SecurityUserRepo)(implicit ec : ExecutionContext) extends Logging with StandardFormats {
+class Security @Inject()(wsClient: WSClient, configuration: Configuration, securityUserRepo: SecurityUserRepo)(implicit ec : ExecutionContext) extends Logging with StandardFormats {
   val discordOAuth = OAuthApp(
-    id = "DISCORD",
-    clientId = "468461306031243264",
-    clientSecret = "KOjFMglvFPVrN_ZWABqIjmrFaX7EAtAE",
-    authorizeUrl = "https://discordapp.com/api/oauth2/authorize",
-    tokenUrl = "https://discordapp.com/api/oauth2/token",
-    userInfoUrl = "https://discordapp.com/api/users/@me",
-    redirectUrl = None
+    id = configuration.get[String]("security.discord.id"),
+    clientId = configuration.get[String]("security.discord.clientId"),
+    clientSecret = configuration.get[String]("security.discord.clientSecret"),
+    authorizeUrl = configuration.get[String]("security.discord.authorizeUrl"),
+    tokenUrl = configuration.get[String]("security.discord.tokenUrl"),
+    userInfoUrl = configuration.get[String]("security.discord.userInfoUrl"),
+    redirectUrl = configuration.get[Option[String]]("security.discord.redirectUrl")
   )
 
   def getDiscordUserFromToken(token : String) : Future[Option[DiscordUser]] = {
