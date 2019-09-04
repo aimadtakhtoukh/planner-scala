@@ -12,7 +12,6 @@
         </div>
         <div class="case-container">
             <column
-                    class="column"
                     v-for="userWithEntries in usersWithEntries"
                     :selectableDays="selectableDays"
                     :userId="userWithEntries.user.id"
@@ -24,7 +23,7 @@
 
 <script>
     import DateUtils from "../../services/DateUtils";
-    import store from "../../services/VuexStore";
+    import store from "../../services/store/VuexStore";
     import Column from "./Column";
 
     export default {
@@ -88,10 +87,6 @@
                 padding-right: 10px;
             }
         }
-    }
-
-    .column {
-        flex : 1;
     }
 
     .case-container {

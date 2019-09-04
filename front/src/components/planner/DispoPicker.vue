@@ -19,7 +19,7 @@
 
 <script>
     import EntryService from "../../services/EntryService";
-    import store from "../../services/VuexStore";
+    import store from "../../services/store/VuexStore";
 
     export default {
         name: "DispoPicker",
@@ -47,8 +47,8 @@
 
         .button {
             flex : 1;
-            width: 40px;
-            height: 24px;
+            width: 24px;
+            max-height: 24px;
             white-space: nowrap;
             text-align: center;
             padding: 0;

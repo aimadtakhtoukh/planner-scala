@@ -12,7 +12,7 @@
 
 <script>
     import moment from "moment";
-    import store from "../../services/VuexStore";
+    import store from "../../services/store/VuexStore";
     import Case from "./Case";
     import DispoPicker from "./DispoPicker";
     import CurrentUser from "../../services/CurrentUser";

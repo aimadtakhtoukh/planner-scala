@@ -1,5 +1,5 @@
 <template>
-    <div class="column" v-bind:class="{'edited' : isColumnEdited}">
+    <div class="column" v-bind:class="{edited : isColumnEdited}">
         <div class="header">
             <span>{{user.name}}</span>
             <a v-if="isConnectedUsers()" @click="editColumn()">
@@ -18,7 +18,7 @@
 </template>
 
 <script>
-    import store from "../../services/VuexStore";
+    import store from "../../services/store/VuexStore";
     import CurrentUser from "../../services/CurrentUser";
     import CaseContainer from "./CaseContainer";
 
@@ -33,16 +33,17 @@
             userId : {type : Number, required: false, default: 0}
         },
         methods : {
-            editColumn() {this.$refs.case.forEach(c => c.onCaseClick())},
-            isConnectedUsers() {return CurrentUser.state.user.id === this.user.id}
+            editColumn() {
+                store.commit("updateColumnState", {
+                    userId : this.userId,
+                    mode : true
+                });
+            },
+            isConnectedUsers() {return CurrentUser.state.user.id === this.user.id},
+            isColumnEdited() {return store.getters.getColumnStateByUserId(this.userId)}
         },
         computed:  {
-            user() {
-                return store.getters.getUserWithEntriesById(this.userId).user
-            },
-            isColumnEdited() {
-                return (this.$refs.case || []).map(c => c.editing).some(e => e === true)
-            }
+            user() {return store.getters.getUserWithEntriesById(this.userId).user}
         },
     }
 </script>
