@@ -1,4 +1,4 @@
-package controllers
+package controllers.traits
 
 import model.{Availability, Entry, User, UserWithEntries}
 import play.api.libs.json._

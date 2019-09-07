@@ -1,6 +1,6 @@
 <template>
-    <div class="column" v-bind:class="{edited : isColumnEdited}">
-        <div class="header">
+    <div class="column">
+        <div class="header" v-bind:class="{edited : isColumnEdited()}">
             <span>{{user.name}}</span>
             <a v-if="isConnectedUsers()" @click="editColumn()">
                 <font-awesome-icon icon="edit"></font-awesome-icon>
@@ -51,12 +51,7 @@
 <style scoped lang="scss">
     .column {
         border-right: 1px solid grey;
-        min-width: 80px;
         flex: 1;
-
-        &.edited {
-            min-width: 160px;
-        }
 
         .case {
             width: 100%;
@@ -71,10 +66,18 @@
 
     .header {
         border-bottom: 1px solid grey;
-        display: flex;
-        flex-wrap: nowrap;
         justify-content: center;
         white-space: nowrap;
+        text-align: center;
+        display: inline-block;
+        min-width: 79px;
+        width: 100%;
+        padding-left: 5px;
+        padding-right: 5px;
+
+        &.edited {
+            min-width: 159px;
+        }
 
         a {
             margin-left: 12px;

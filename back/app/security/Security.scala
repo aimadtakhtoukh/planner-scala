@@ -1,6 +1,6 @@
 package security
 
-import controllers.StandardFormats
+import controllers.traits.StandardFormats
 import javax.inject.Inject
 import play.api.{Configuration, Logging}
 import play.api.libs.json.Json

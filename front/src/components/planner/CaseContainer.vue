@@ -5,7 +5,6 @@
                 :userId="userId"
                 :date="date"
                 v-show="this.editing"
-                @entrysent="onEntrySent"
         ></dispo-picker>
     </div>
 </template>
@@ -22,27 +21,25 @@
         components : {
             Case, DispoPicker
         },
+        store,
         props : {
             isConnectedUsers : {type : Boolean, required: true, default: false},
             userId : {type : Number, required: true, default: 0},
             date : {type : Object, required: true, default: moment()}
         },
-        data() {
-            return {
-                editing : false
-            }
-        },
         computed : {
             entry : function () {return store.getters.getEntryByUserIdAndDate(this.userId, this.date.format("YYYY-MM-DD"))},
+            editing : function() {return store.getters.getCaseStateByUserIdAndDate(this.userId, this.date.format("YYYY-MM-DD"))}
         },
         methods : {
             onCaseClick() {
                 if (CurrentUser.state.user.id === this.userId) {
-                    this.editing = true;
+                    store.commit("updateCaseState", {
+                        userId : this.userId,
+                        date: this.date.format("YYYY-MM-DD"),
+                        mode : true
+                    });
                 }
-            },
-            onEntrySent() {
-                this.editing = false;
             }
         }
     }

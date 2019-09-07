@@ -1,6 +1,7 @@
 package controllers
 
 import controllers.actions.{AnyTokenAllowed, AnyUserAllowed, UserAwareAction}
+import controllers.traits.{LocalDateConversion, StandardFormats}
 import javax.inject.{Inject, Singleton}
 import model.Entry
 import play.api.Logging
@@ -12,19 +13,19 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class EntryController @Inject()
-  (entryRepo : EntryRepo, userAwareAction: UserAwareAction, cc: ControllerComponents)
-  (implicit ec : ExecutionContext) extends AbstractController(cc) with Logging with StandardFormats {
+(entryRepo : EntryRepo, userAwareAction: UserAwareAction, cc: ControllerComponents)
+(implicit ec : ExecutionContext) extends AbstractController(cc) with Logging with StandardFormats with LocalDateConversion {
 
   def getById(id : Long) = userAwareAction.andThen(new AnyTokenAllowed).async {
-      entryRepo.byId(id)
-        .map(Json.toJson(_))
-        .map(Ok(_))
+    entryRepo.byId(id)
+      .map(Json.toJson(_))
+      .map(Ok(_))
   }
 
   def getByUser(userId : Long) = userAwareAction.andThen(new AnyTokenAllowed).async {
-      entryRepo.byUser(userId)
-        .map(Json.toJson(_))
-        .map(Ok(_))
+    entryRepo.byUser(userId)
+      .map(Json.toJson(_))
+      .map(Ok(_))
   }
 
   def add() = userAwareAction.andThen(new AnyUserAllowed).async(parse.json) {
@@ -50,10 +51,10 @@ class EntryController @Inject()
       )
   }
 
-  def withUser() = userAwareAction.andThen(new AnyTokenAllowed).async {
-      entryRepo.usersWithEntries()
-        .map(Json.toJson(_))
-        .map(Ok(_))
+  def withUser(from : String, to : String) = userAwareAction.andThen(new AnyTokenAllowed).async {
+    entryRepo.usersWithEntries(from.toDate(), to.toDate())
+      .map(Json.toJson(_))
+      .map(Ok(_))
   }
 
 

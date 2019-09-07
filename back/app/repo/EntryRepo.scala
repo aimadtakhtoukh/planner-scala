@@ -55,8 +55,12 @@ class EntryRepo @Inject()
 
   val joinedQuery =  userRepo.users joinLeft entries on (_.id === _.userId)
 
-  def usersWithEntries(): Future[List[UserWithEntries]] = {
-    db.run((userRepo.users joinLeft entries on (_.id === _.userId)).result)
+  def usersWithEntries(from : LocalDate, to : LocalDate): Future[List[UserWithEntries]] = {
+    db.run(
+      (userRepo.users joinLeft entries on (_.id === _.userId))
+        .filter {case (_, entries) => entries.map(e => e.date >= from && e.date <= to)}
+        .result
+    )
       .map(
         _
           .groupBy(_._1)
@@ -64,6 +68,8 @@ class EntryRepo @Inject()
           .map(UserWithEntries.tupled)
           .map(userWithEntries => UserWithEntries(user = userWithEntries.user, entries = userWithEntries.entries.groupBy(_.date).toList.map {case (_, e) => e.last}))
           .toList
+          .sortBy(_.user.id)
+          .map(u => u.copy(entries = u.entries.sortWith((f, s) => f.date.isBefore(s.date))))
       )
   }
 

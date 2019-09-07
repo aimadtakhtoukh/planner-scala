@@ -1,6 +1,7 @@
 package controllers
 
 import controllers.actions.UserAwareAction
+import controllers.traits.StandardFormats
 import javax.inject.{Inject, Singleton}
 import play.api.Logging
 import play.api.libs.json.Json

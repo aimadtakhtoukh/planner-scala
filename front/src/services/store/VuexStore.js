@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import EntryService from "../EntryService";
 import CurrentUser from "../CurrentUser";
+import DateUtils from "../DateUtils";
 
 Vue.use(Vuex);
 
@@ -27,17 +28,23 @@ const store = new Vuex.Store({
         return accumulator;
       }, {});
       state.columnsState = usersWithEntries.reduce((accumulator, userWithEntries) => {
-        accumulator[userWithEntries.user.id] = userWithEntries.entries.reduce((accumulator, entry) => {
-          accumulator[entry.date] = state.columnsState[userWithEntries.user.id][entry.date] || false;
-          return accumulator;
-        }, {});
+        accumulator[userWithEntries.user.id] = DateUtils.getEditedDateRange()
+          .map(d => d.format("YYYY-MM-DD"))
+          .reduce((accumulator, date) => {
+            state.columnsState[userWithEntries.user.id] = state.columnsState[userWithEntries.user.id] || {};
+            accumulator[date] = state.columnsState[userWithEntries.user.id][date] || false;
+            return accumulator;
+          }, {});
         return accumulator;
       }, {});
     },
     updateCaseState(state, payload) {
+      state.columnsState = state.columnsState || {};
+      state.columnsState[payload.userId] = state.columnsState[payload.userId] || {};
       state.columnsState[payload.userId][payload.date] = payload.mode
     },
     updateColumnState(state, payload) {
+      state.columnsState = state.columnsState || {};
       Object.keys(state.columnsState[payload.userId]).forEach(key => state.columnsState[payload.userId][key] = payload.mode)
     }
   },

@@ -35,7 +35,11 @@
                     date: this.date.format("YYYY-MM-DD")
                 })
                 .then(() => store.dispatch("update"))
-                .then(() => this.$emit("entrysent"))
+                .then(() => store.commit("updateCaseState", {
+                    userId : this.userId,
+                    date: this.date.format("YYYY-MM-DD"),
+                    mode : false
+                }))
             }
         }
     }

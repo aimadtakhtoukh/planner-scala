@@ -7,7 +7,7 @@
         alt="Calendar"/>
     </a>
     <div class="right-floating" v-show="connected">
-      <span>{{user.name || ""}}</span>
+      <span class="user-label">{{user.name || ""}}</span>
       <button class="btn disconnect-button" @click="disconnect">Déconnexion</button>
     </div>
   </nav>
@@ -69,7 +69,12 @@
       height : 100%;
       margin-right : 10px;
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
+
+      .user-label {
+        text-align: center;
+        width: 100%;
+      }
 
       .disconnect-button {
         background-color : #7289da;

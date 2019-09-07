@@ -1,6 +1,7 @@
 package controllers
 
 import controllers.actions.{AnyTokenAllowed, AnyUserAllowed, UserAwareAction}
+import controllers.traits.StandardFormats
 import javax.inject._
 import model.User
 import play.api.libs.json._
