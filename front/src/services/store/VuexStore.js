@@ -53,7 +53,9 @@ const store = new Vuex.Store({
       return EntryService.getUsersAndEntries().then(
         (usersWithEntriesRaw) => {
           const id = (CurrentUser.state.user || {id: 0}).id;
+          const currentUserWithEntry = usersWithEntriesRaw.find(u => u.user.id === id);
           const usersWithEntries = usersWithEntriesRaw
+            .filter(userWithEntry => userWithEntry.user.id !== id)
             .filter(userWithEntry => !!userWithEntry.entries)
             .sort(
               (user1, user2) => {
@@ -66,7 +68,7 @@ const store = new Vuex.Store({
                 return 0
               }
             )
-          commit("update", usersWithEntries)
+          commit("update",  [currentUserWithEntry].concat(usersWithEntries))
         }
       )
     }
