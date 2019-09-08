@@ -57,6 +57,7 @@ const store = new Vuex.Store({
           const usersWithEntries = usersWithEntriesRaw
             .filter(userWithEntry => userWithEntry.user.id !== id)
             .filter(userWithEntry => !!userWithEntry.entries)
+            .filter(userWithEntry => userWithEntry.entries.length !== 0)
             .sort(
               (user1, user2) => {
                 if (user1.user.id === id) {
