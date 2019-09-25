@@ -20,9 +20,14 @@ const store = new Vuex.Store({
   },
   actions: {
     updateUser({commit}) {
-      return UserService.getSelf().then(user => {
-        commit("updateUser", user);
-        return user
+      return UserService.getSelf().then(response => {
+        if (response.status === "error") {
+          return response.data.data.error
+        } else {
+          const user = response.data;
+          commit("updateUser", user);
+          return user
+        }
       })
     }
   }

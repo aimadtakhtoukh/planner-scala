@@ -16,7 +16,10 @@
       } else {
         CurrentUser.dispatch("updateUser")
           .then(response => {
-            if (!response) {
+            if (response === "Unknown token") {
+              TokenService.removeToken();
+              this.$router.push("/not-logged")
+            } else if (response === "Unknown user") {
               this.$router.push("/subscribe")
             } else {
               this.$router.push("/main")

@@ -9,7 +9,8 @@ import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponent
 import repo.UserRepo
 import security.{Security, SecurityUserRepo}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Singleton
 class SecurityController @Inject()
@@ -28,11 +29,22 @@ class SecurityController @Inject()
         )
   }
 
-  def getUser() = userAwareAction {
+  def getUser: Action[AnyContent] = userAwareAction {
     implicit request =>
-      request.user
-          .map(Json.toJson(_))
-          .map(Ok(_))
-          .getOrElse(Unauthorized("{\"error\" : \"Unknown user\"}"))
+      request.user match {
+        case Some(user) =>
+          Ok(Json.toJson(user))
+        case None =>
+          Await.result(
+            request.authorization
+              .map(security.getDiscordUserFromToken)
+              .getOrElse(Future.failed(new IllegalStateException(""))),
+              Duration.Inf
+          ) match {
+            case Some(_) => Unauthorized("{\"error\" : \"Unknown user\"}")
+            case None => Unauthorized("{\"error\" : \"Unknown token\"}")
+          }
+      }
   }
+
 }
