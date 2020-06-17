@@ -1,7 +1,7 @@
 const express = require('express');
 const fetch = require('node-fetch');
-const btoa = require('btoa');
 const { catchAsync } = require('./utils');
+const {URLSearchParams} = require('url');
 const https = require('https');
 
 const router = express.Router();
